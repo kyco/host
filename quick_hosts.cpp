@@ -21,7 +21,7 @@ void menu_option(int option);
 string check_host_path();
 string view_hosts();
 int setup(string switch_host_file);
-int switch_profile(string profile);
+void switch_profile(string profile);
 void choose_profile();
 void arguments(string ts, string a, int test);
 void add_profile(string add_profile);
@@ -78,6 +78,8 @@ void menu_option(int option) {
 		case 2:
 			host_file = view_hosts();
 			cout << host_file;
+
+			//Used to wait for user input before returning to the main menu
 			std::cin.ignore(1024, '\n');
   			std::cout << "press enter to continue ";
   			std::cin.get();
@@ -165,10 +167,17 @@ int setup(string switch_host_file) {
         }
 	host_file.close();
 	mkdir("profiles",0777);
+
+	//Used to wait for user input before returning to the main menu
+	std::cin.ignore(1024, '\n');
+	std::cout << "press enter to continue ";
+	std::cin.get();
+	menu();
+
 	return 0;
 }
 
-int switch_profile(string profile) {
+void switch_profile(string profile) {
 	//Load the profile directory
 	chdir("profiles");
 
@@ -179,7 +188,7 @@ int switch_profile(string profile) {
 	string profile_replace;
 	string new_line = "\n";
 	host = view_hosts();
-	cout << working_dir << endl;
+	//cout << working_dir << endl;
 
 	//Get the contents of the new profile
 	ifstream new_profile;
@@ -189,9 +198,9 @@ int switch_profile(string profile) {
 		profile_replace = profile_replace+new_line+line;
 	}
 	new_profile.close();
-	chdir("..\\");
+	chdir("..");
 	working_dir = getcwd(NULL,0);
-	cout << working_dir << endl;
+	//cout << working_dir << endl;
 	profile_replace = header+new_line+profile_replace;
 
 	// let's replace the first needle:
@@ -201,7 +210,6 @@ int switch_profile(string profile) {
 	replace << host << endl;
 	replace.close();
 	cout << host << endl;
-	return 0;
 }
 
 string check_host_path() {
@@ -235,27 +243,32 @@ void choose_profile() {
 	dir = opendir ("profiles");
 	if (dir != NULL) {
 
-	/* print all the files and directories within directory */
-	while ((ent = readdir (dir)) != NULL) {
-		control_unit = ent->d_name;
-		if (control_unit == "." || control_unit == "..")
-			continue;
-		else {
-			contents[control] = ent->d_name;
-	  		control++;
+		/* print all the files and directories within directory */
+		while ((ent = readdir (dir)) != NULL) {
+			control_unit = ent->d_name;
+			if (control_unit == "." || control_unit == "..")
+				continue;
+			else {
+				contents[control] = ent->d_name;
+		  		control++;
+			}
 		}
-	}
-	for (int i = 0; i < control; ++i)
-	{
-		cout << i << ". " << contents[i] << endl;
-	}
-	cout << "Option: ";
-	cin >> host;
-	closedir (dir);
-	switch_profile(contents[host].c_str());
+		for (int i = 0; i < control; ++i)
+		{
+			cout << i << ". " << contents[i] << endl;
+		}
+		cout << "Option: ";
+		cin >> host;
+		closedir (dir);
+		switch_profile(contents[host].c_str());
+
+		std::cin.ignore(1024, '\n');
+		std::cout << "press enter to continue ";
+		std::cin.get();
+		menu();
 	}
 	else {
-	setup("");
+		setup("");
 	}
 }
 
@@ -303,7 +316,9 @@ void add_profile(string add_profile) {
 		cout << view_line+"\n";
 	}
 	view.close();
-	chdir("..\\");
+	chdir("..");
+
+	//Used to wait for user input before returning to the main menu
 	std::cin.ignore(1024, '\n');
   	std::cout << "press enter to continue ";
   	std::cin.get();
@@ -350,12 +365,12 @@ void remove_profile(string r_profile) {
 			remove_this_one = contents[chosen];
 			if (remove(remove_this_one.c_str()) != 0) {
 				cout << "Remove failed. Please try again" << endl;
-				chdir("..\\");
+				chdir("..");
 				remove_profile("1");
 			}
 			else {
 				cout << "Remove successful" << endl;
-				chdir("..\\");
+				chdir("..");
 			}
 		}
 		else if (option == 1)
@@ -365,12 +380,12 @@ void remove_profile(string r_profile) {
 			chdir("profiles");
 			if (remove(remove_this_one.c_str()) != 0) {
 				cout << "Remove failed. Please try again" << endl;
-				chdir("..\\");
+				chdir("..");
 				remove_profile("1");
 			}
 			else {
 				cout << "Remove successful" << endl;
-				chdir("..\\");
+				chdir("..");
 			}
 		}
 	}
@@ -378,16 +393,17 @@ void remove_profile(string r_profile) {
 		chdir("profiles");
 		if (remove(r_profile.c_str()) != 0) {
 			cout << "Remove failed. Please try again" << endl;
-			chdir("..\\");
+			chdir("..");
 			remove_profile("1");
 		}
 		else {
 			cout << "Remove successful" << endl;
-			chdir("..\\");
+			chdir("..");
 		}
 	}
 	//remove(profile_remove.c_str());
-	chdir("..\\");
+
+	//Used to wait for user input before returning to the main menu
 	std::cin.ignore(1024, '\n');
   	std::cout << "press enter to continue ";
   	std::cin.get();
