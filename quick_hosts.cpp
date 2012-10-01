@@ -26,6 +26,7 @@ void choose_profile();
 void arguments(string ts, string a, int test);
 void add_profile(string add_profile);
 void remove_profile(string r_profile);
+void view_profiles();
 
 int main(int argc, char const *argv[]) {
 	string the_switch;
@@ -61,9 +62,10 @@ void menu() {
 	cout << "Options: " << endl;
 	cout << "1. Switch profile" << endl;
 	cout << "2. Read hosts file" << endl;
-	cout << "3. Add a new profile" << endl;
-	cout << "4. Remove a profile" << endl;
-	cout << "5. Setup hosts file" << endl;
+	cout << "3. View profiles" << endl;
+	cout << "4. Add a new profile" << endl;
+	cout << "5. Remove a profile" << endl;
+	cout << "6. Setup hosts file" << endl;
 	cout << "Option: ";
 	cin >> option;
 	menu_option(option);
@@ -86,12 +88,21 @@ void menu_option(int option) {
   			menu();
 			break;
 		case 3:
-			add_profile("1");
+			view_profiles();
+
+			//Used to wait for user input before returning to the main menu
+			std::cin.ignore(1024, '\n');
+  			std::cout << "press enter to continue ";
+  			std::cin.get();
+  			menu();
 			break;
 		case 4:
-			remove_profile("1");
+			add_profile("1");
 			break;
 		case 5:
+			remove_profile("1");
+			break;
+		case 6:
 			setup("1");
 			break;
 	}
@@ -408,4 +419,33 @@ void remove_profile(string r_profile) {
   	std::cout << "press enter to continue ";
   	std::cin.get();
   	menu();
+}
+
+
+void view_profiles() {
+	string contents[50];
+	int control = 0;
+	string control_unit;
+
+	DIR *dir;
+	struct dirent *ent;
+	dir = opendir ("profiles");
+	while ((ent = readdir (dir)) != NULL) {
+		control_unit = ent->d_name;
+		if (control_unit == "." || control_unit == "..")
+			continue;
+		else {
+			contents[control] = ent->d_name;
+	  		control++;
+		}
+	}
+	if (control == 0)
+	{
+		cout << "You currently have no profiles" << endl;
+	}
+	for (int i = 0; i < control; ++i)
+	{
+		cout << i << ". " << contents[i] << endl;
+	}
+	chdir("..");
 }
