@@ -12,9 +12,6 @@
 using namespace std;
 
 int option;
-string dir;
-string global_host_path;
-string header = "#quick_hosts_profile";
 
 void menu();
 void menu_option(int option);
@@ -33,7 +30,7 @@ int main(int argc, char const *argv[]) {
 	string argument;
 	int quick_incr = 0;
 
-	global_host_path = check_host_path();
+	string host_path = check_host_path();
 
 	if (argc % 2 != 0) {
 	   	for(int i = 1; i < argc; i = i + 2) {
@@ -57,7 +54,22 @@ int main(int argc, char const *argv[]) {
 	return 0;
 }
 
-void menu() {
+void arguments(string ts, string a, int test)
+{
+	if (ts == "-p")
+		switch_profile(a.c_str());
+	else if (ts == "-c")
+		add_profile(a);
+	else if (ts == "-r")
+		remove_profile(a);
+	else if (ts == "-h")
+		setup(a);
+	else if (ts != "-h" && ts != "-c" && ts != "-r" && ts != "-p")
+		exit(1);
+}
+
+void menu()
+{
 	cout << "===========================================================" << endl;
 	cout << "Options: " << endl;
 	cout << "1. Switch profile" << endl;
@@ -71,7 +83,8 @@ void menu() {
 	menu_option(option);
 }
 
-void menu_option(int option) {
+void menu_option(int option)
+{
 	string host_file;
 	switch(option) {
 		case 1:
@@ -108,17 +121,13 @@ void menu_option(int option) {
 	}
 }
 
-string view_hosts() {
+string view_hosts()
+{
 	string file;
 	string host;
+	string dir;
 	
-	if (global_host_path == "")
-	{
-		cout << "Please enter the path to your hosts file: " << endl;
-		cin >> dir;
-		cout << dir << endl;
-	}
-	else dir = global_host_path;
+	dir = check_host_path();
 
 	ifstream hosts;
 	hosts.open (dir.c_str());
@@ -131,12 +140,14 @@ string view_hosts() {
 	return host;
 }
 
-int setup(string switch_host_file) {
+int setup(string switch_host_file)
+{
 	string file;
 	string store_path;
 	string partial;
 	string folder;
 	string get_line;
+	string header = "#quick_hosts_profile";
 	bool check = false;
 
 	if (switch_host_file == "1")
@@ -188,7 +199,8 @@ int setup(string switch_host_file) {
 	return 0;
 }
 
-void switch_profile(string profile) {
+void switch_profile(string profile)
+{
 	//Load the profile directory
 	chdir("profiles");
 
@@ -199,7 +211,10 @@ void switch_profile(string profile) {
 	string profile_replace;
 	string new_line = "\n";
 	host = view_hosts();
-	//cout << working_dir << endl;
+	string host_path = check_host_path();
+	string header = "#quick_hosts_profile";
+	
+	cout << host_path << endl;
 
 	//Get the contents of the new profile
 	ifstream new_profile;
@@ -217,13 +232,14 @@ void switch_profile(string profile) {
 	// let's replace the first needle:
 	host.replace(host.find(header),host.length(),profile_replace);
 	ofstream replace;
-	replace.open(global_host_path.c_str());
+	replace.open(host_path.c_str());
 	replace << host << endl;
 	replace.close();
 	cout << host << endl;
 }
 
-string check_host_path() {
+string check_host_path()
+{
 	string get_path;
 	string path;
 
@@ -242,7 +258,8 @@ string check_host_path() {
 	return path;
 }
 
-void choose_profile() {
+void choose_profile()
+{
 	string contents[50];
 	int control = 0;
 	string control_unit;
@@ -283,20 +300,8 @@ void choose_profile() {
 	}
 }
 
-void arguments(string ts, string a, int test) {
-	if (ts == "-p")
-		switch_profile(a.c_str());
-	else if (ts == "-c")
-		add_profile(a);
-	else if (ts == "-r")
-		remove_profile(a);
-	else if (ts == "-h")
-		setup(a);
-	else if (ts != "-h" && ts != "-c" && ts != "-r" && ts != "-p")
-		exit(1);
-}
-
-void add_profile(string add_profile) {
+void add_profile(string add_profile)
+{
 	string profile;
 	string p_name;
 	string view_line;
@@ -336,7 +341,8 @@ void add_profile(string add_profile) {
   	menu();
 }
 
-void remove_profile(string r_profile) {
+void remove_profile(string r_profile)
+{
 	string profile_remove;
 	string contents[50];
 	string remove_this_one;
@@ -422,7 +428,8 @@ void remove_profile(string r_profile) {
 }
 
 
-void view_profiles() {
+void view_profiles()
+{
 	string contents[50];
 	int control = 0;
 	string control_unit;
