@@ -12,6 +12,9 @@ Once that is done, there will also be executables for Windows OSs.
 ##Compile
 Nothing extra is needed for compiling
 
+No binaries are included. A compile is necessary.
+Tested with g++ in Linux Mint for both 32 bit & 64 bit installs.
+
 ##First run
 The first time you run the program you will need to give it the
 full path of your hosts file.
@@ -34,3 +37,20 @@ them whenever you need to.
 
 In later versions it is planned for network detection. So when it
 detects your work network, it will switch the profile automatically.
+
+##Arguments
+This program accepts arguments.
+
+Which are as follows
+
+###Switching profiles
+	./qh -p home //Will switch to a profile named "home"
+
+###Adding profiles
+	./qh -c 127.0.0.1 test //Create a new profile with the contents of 127.0.0.1 test
+
+###Removing profiles
+	./qh -r test //This will remove a profile called test
+
+###Setup
+	./qh -h //This will initiate the setup process

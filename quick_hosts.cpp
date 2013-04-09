@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
-#include <string>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -10,8 +9,6 @@
 #include <unistd.h>
 
 using namespace std;
-
-int option;
 
 void menu();
 void menu_option(int option);
@@ -25,7 +22,8 @@ void add_profile(string add_profile);
 void remove_profile(string r_profile);
 void view_profiles();
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[])
+{
 	string the_switch;
 	string argument;
 	int quick_incr = 0;
@@ -70,6 +68,8 @@ void arguments(string ts, string a, int test)
 
 void menu()
 {
+	int option;
+
 	cout << "===========================================================" << endl;
 	cout << "Options: " << endl;
 	cout << "1. Switch profile" << endl;
@@ -77,7 +77,7 @@ void menu()
 	cout << "3. View profiles" << endl;
 	cout << "4. Add a new profile" << endl;
 	cout << "5. Remove a profile" << endl;
-	cout << "6. Setup hosts file" << endl;
+	cout << "6. Setup" << endl;
 	cout << "Option: ";
 	cin >> option;
 	menu_option(option);
@@ -123,11 +123,14 @@ void menu_option(int option)
 
 string view_hosts()
 {
-	string file;
-	string host;
-	string dir;
+	string file; //Used as a container to save each line
+	string host; //Used as a temporary storage variable for the host file information
+	string dir; //Stores the location of the host file
 	
 	dir = check_host_path();
+
+	cout << dir << endl;
+	cout << "test after dir" << endl;
 
 	ifstream hosts;
 	hosts.open (dir.c_str());
@@ -201,20 +204,16 @@ int setup(string switch_host_file)
 
 void switch_profile(string profile)
 {
-	//Load the profile directory
-	chdir("profiles");
-
-	//Load the host file into host
-	string working_dir = getcwd(NULL,0);
 	string line;
-	string host;
+	string host = view_hosts();
 	string profile_replace;
 	string new_line = "\n";
-	host = view_hosts();
 	string host_path = check_host_path();
 	string header = "#quick_hosts_profile";
 	
-	cout << host_path << endl;
+	//Load the profile directory
+	chdir("profiles");
+	string working_dir = getcwd(NULL,0);
 
 	//Get the contents of the new profile
 	ifstream new_profile;
@@ -226,7 +225,6 @@ void switch_profile(string profile)
 	new_profile.close();
 	chdir("..");
 	working_dir = getcwd(NULL,0);
-	//cout << working_dir << endl;
 	profile_replace = header+new_line+profile_replace;
 
 	// let's replace the first needle:
@@ -243,6 +241,7 @@ string check_host_path()
 	string get_path;
 	string path;
 
+	cout << getcwd(NULL,0) << endl;
 	ifstream host_path;
 	host_path.open ("host_path.ky");
 	if (!host_path.fail())
@@ -255,6 +254,8 @@ string check_host_path()
 				}
 		}
 	}
+	else
+		cout << "Can't open config file file" << endl;
 	return path;
 }
 
@@ -311,7 +312,7 @@ void add_profile(string add_profile)
 	if (add_profile != "1")
 		profile = add_profile;
 	else {
-		cout << "Please enter the profile constraints: " << endl;
+		cout << "Please enter the profile constraints (end with % and press enter to finish): " << endl;
 		char new_input[1024];
 		cin.getline(new_input, 1024, '%');
 		profile=new_input;//cast char array to string
