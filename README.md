@@ -1,4 +1,25 @@
-#QH
+#QS
+
+##Description
+QS is designed for people who edit their hosts file a lot.
+The idea behind it is simple, profiles.
+
+Instead of having to comment out lines in your hosts file,
+simply create profiles for each specific case.
+For instance a home profile:
+
+    127.0.0.1 localhost testwebsite google.co.za
+    192.168.0.3 owncloud home.server
+
+Work profile:
+
+    127.0.0.1 big.project.1
+    172.16.10.1 cloud.work cups.server
+
+Friends house profile:
+
+    10.0.0.1 warcraft3server file.sharing.server
+    10.0.0.5 friends.homewebsite
 
 ##Requirements
 For now the project is only written with Unix like systems in mind.
@@ -7,13 +28,26 @@ It will not work under Windows yet.
 Once the project has reached its first RC, I will rewrite what is needed
 for it to be compiled for Windows.
 
-Once that is done, there will also be executables for Windows OSs.
+Once that is done, there will also be executables for Windows OS's.
 
 ##Compile
 Nothing extra is needed for compiling
 
 No binaries are included. A compile is necessary.
 Tested with g++ in Linux Mint for both 32 bit & 64 bit installs.
+
+Compile using:
+
+	g++ -Wall quick_host.cpp -o qs
+
+Then make sure you have qs in your /usr/bin folder.
+To copy it:
+
+    sudo cp qs /usr/bin
+Using symbolic links (preferred method)
+
+    cd /usr/bin
+    sudo ln -s /path/to/quick_hosts/qs
 
 ##First run
 The first time you run the program you will need to give it the
@@ -44,13 +78,21 @@ This program accepts arguments.
 Which are as follows
 
 ###Switching profiles
-	./qh -p home //Will switch to a profile named "home"
+This will switch to a profile named "home"
+
+	sudo qs -p home
 
 ###Adding profiles
-	./qh -c 127.0.0.1 test //Create a new profile with the contents of 127.0.0.1 test
+Create a new profile with the contents of 127.0.0.1 test
+
+	sudo qs -c 127.0.0.1 test
 
 ###Removing profiles
-	./qh -r test //This will remove a profile called test
+This will remove a profile called test
+
+	sudo qs -r test
 
 ###Setup
-	./qh -h //This will initiate the setup process
+This will initiate the setup process
+
+	sudo qs -h
