@@ -10,18 +10,26 @@
 
 using namespace std;
 
+// Menus
 void menu(); // Prints out a menu with options
 void menu_option(int option); // Handles the options from the menus
+void arguments(string ts, string a, int test); // When arguments are passed to the program from a cli
+void wait_for_menu(); // Used to remove redundant lines of code when waiting for user input after functions
+
+// Hosts file
 string check_host_path(); // Get the location of the host file after it has been setup
 string view_hosts(); // Display/Print out the contents of the host file
 int setup(string switch_host_file); // Setup all the necessary files and folders
+
+// Profiles
 void switch_profile(string profile); // Actually switching the profile
 void choose_profile(); // To choose a profile before switching
-void arguments(string ts, string a, int test); // When arguments are passed to the program from a cli
-void add_profile(string add_profile); // Adding a new profile with constraints
-void remove_profile(string r_profile); // Remove one of the profiles in the list
 void view_profiles(); // View the profiles
-void wait_for_menu(); // Used to remove redundant lines of code when waiting for user input after functions
+void remove_profile(string r_profile); // Remove one of the profiles in the list
+void add_profile(string add_profile); // Adding a new profile with constraints
+
+// Check networks
+void network_check();
 
 int main(int argc, char const *argv[])
 {
@@ -29,7 +37,13 @@ int main(int argc, char const *argv[])
 	string argument; // Holds the variable passed to the program
 	int quick_incr = 0; // Used to increment within the for loop. Required to store argument as it is switch + 1
 
-	//string host_path = check_host_path(); // Get the location of our hosts file
+	// Get the user ID
+	if (getuid() != 0)
+	{
+		cout << "This program needs to be run as root." << endl;
+		cout << "Please run this program as root." << endl;
+		exit(0);
+	}
 
 	if (argc % 2 != 0) // If the argument is an odd number, it is either incomplete or non-existant
 	{
@@ -83,6 +97,7 @@ void menu() // Function to display the menu
 	cout << "4. Add a new profile" << endl;
 	cout << "5. Remove a profile" << endl;
 	cout << "6. Setup" << endl;
+	cout << "0. Exit" << endl;
 	cout << "Option: ";
 	cin >> option; // Gets the input of the user
 	menu_option(option); // Calls the function which will direct to the user defined function
@@ -115,6 +130,8 @@ void menu_option(int option) // Once a choice has een made, this function will c
 			setup("1"); // Setup the software config files
 			wait_for_menu();
 			break;
+		case 0:
+			exit(0);
 	}
 }
 
@@ -138,6 +155,7 @@ string view_hosts() // Used to view the hosts files
 
 	ifstream hosts; // Initializes a variable for opening a file
 	hosts.open (dir.c_str()); // Opens the path given by the variable dir
+	cout << endl;
 	while(!hosts.eof()) // Loops until the end of the file
 	{
 		getline(hosts,file); // Saves each line to the variable called file.
@@ -155,6 +173,9 @@ int setup(string switch_host_file) // Sets up the config files for the software
 	string header = "#quick_hosts_profile"; // A header which defines the beginning of the host_switch configs in the hosts fole
 	bool check = false; // False until the header is found in the hosts file
 
+	mkdir("/etc/qs",0777);
+	chdir("/etc/qs");
+
 	if (switch_host_file == "1") // If the hosts file needs to be setup, run this.
 	{
 		cout << "Please enter the path to your hosts file: " << endl; // Requests path to hosts file
@@ -162,6 +183,7 @@ int setup(string switch_host_file) // Sets up the config files for the software
 	}
 	else // Otherwise it has been setup already and will get the path from the variable passed to the function
 		store_path = switch_host_file; // Stores the variable in store_path
+
 	ifstream given_host_file; // Initializes a variable to open files
 	given_host_file.open(store_path.c_str()); // Opens the file in the path indicated by store_path
 	while(!given_host_file.eof()) // Loops until the end of the file
@@ -182,86 +204,88 @@ int setup(string switch_host_file) // Sets up the config files for the software
 
 	given_host_file.close(); // Closes the variable for the hosts file
 
-	ofstream store_hosts("host_path.ky"); // Opens the file host_path.ky for editing
+	ofstream store_hosts("/etc/qs/host_path.ky"); // Opens the file host_path.ky for editing
 	store_hosts << store_path << endl; // Adds the path to the config file
 	store_hosts.close(); // closes store_hosts
 
 	cout << "You have selected this to be your hosts file: " << endl;
 	ifstream host_file; // Initializes the variable for display
-	host_file.open ("host_path.ky"); // Opens the config file
+	host_file.open ("/etc/qs/host_path.ky"); // Opens the config file
 	while(!host_file.eof()) // Loops until the end of the file
 	{
 		getline(host_file,file); // Saves the each line in file.
 		cout << file << endl; // Prints out file.
 	}
 	host_file.close(); // Closes the config file
-	mkdir("profiles",0777); // Creates a folder with permissions for everyone to read and write to later save profiles in
+	mkdir("/etc/qs/profiles",0777); // Creates a folder with permissions for everyone to read and write to later save profiles in
 
 	return 0;
 }
 
 void switch_profile(string profile)
 {
-	string line;
-	string host = view_hosts();
-	string profile_replace;
-	string new_line = "\n";
-	string host_path = check_host_path();
-	string header = "#quick_hosts_profile";
+	string line; // Stores each line 
+	string host = view_hosts(); // Stores the host file
+	string profile_replace; // Stores the replacement profile
+	string new_line = "\n"; // New line
+	string host_path = check_host_path(); // Stores the path of the hosts file
+	string header = "#quick_hosts_profile"; // Header
 
-	//Load the profile directory
-	chdir("profiles");
-	string working_dir = getcwd(NULL,0);
+	// Load the profile directory
+	chdir("/etc/qs/profiles"); // Changes dir
+	string working_dir = getcwd(NULL,0); // Get current working dir
 
 	//Get the contents of the new profile
-	ifstream new_profile;
-	new_profile.open(profile.c_str());
-	while(!new_profile.eof())
+	ifstream new_profile; // Initialize variable for opening files
+	new_profile.open(profile.c_str()); // Open the profile
+	while(!new_profile.eof()) // Loop until end of file
 	{
-		getline(new_profile,line);
-		profile_replace = profile_replace+new_line+line;
+		getline(new_profile,line); // Store each line
+		profile_replace = profile_replace+new_line+line; // Adds a new line after each line was saved
 	}
-	new_profile.close();
-	chdir("..");
-	working_dir = getcwd(NULL,0);
-	profile_replace = header+new_line+profile_replace;
+	new_profile.close(); // Close the variable
+	chdir(".."); // Move to parent folder
+	working_dir = getcwd(NULL,0); // Get current working dir
+	profile_replace = header+new_line+profile_replace; // Replace the profile
 
 	// let's replace the first needle:
 	host.replace(host.find(header),host.length(),profile_replace);
-	ofstream replace;
-	replace.open(host_path.c_str());
-	replace << host << endl;
-	replace.close();
-	cout << host << endl;
+	ofstream replace; // Initialize a variable for editing files
+	replace.open(host_path.c_str()); // Open the hosts file
+	replace << host << endl; // Replace the hosts file with new hosts file
+	replace.close(); // Close the variable
+	cout << host << endl; // Print the new hosts file
 }
 
-string check_host_path()
+string check_host_path() // Get the path to the hosts file
 {
-	string get_path;
-	string path;
+	string get_path; // Temporary stoarage for the path
+	string path; // Variable to store the actual path
 
-	cout << getcwd(NULL,0) << endl;
-	ifstream host_path;
-	host_path.open ("host_path.ky");
-	if (!host_path.fail())
+	ifstream host_path; // Initialize the variable for opening files
+	host_path.open ("/etc/qs/host_path.ky"); // Open the config file
+	if (!host_path.fail()) // If it does not fail opening the config file
 	{
-		while(!host_path.eof())
+		while(!host_path.eof()) // Loop until end of file
 		{
-			getline(host_path,get_path);
-			if (get_path != "")
+			getline(host_path,get_path); // Store the path in get_path
+			if (get_path != "") // If it is not empty
 			{
-				path = get_path;
+				path = get_path; // Store the result in path
 			}
 		}
 	}
-	else
+	else // Otherwise print error
+	{
 		cout << "Can't open config file file" << endl;
+		menu();
+	}
 	return path;
 }
 
-void choose_profile()
+void choose_profile() // Choose the profile
 {
-	string contents[50];
+	string contents[50]; // Contents of the profile
 	int control = 0;
 	string control_unit;
 	int host = 0;
@@ -269,7 +293,7 @@ void choose_profile()
 
 	DIR *dir;
 	struct dirent *ent;
-	dir = opendir ("profiles");
+	dir = opendir ("/etc/qs/profiles");
 	if (dir != NULL)
 	{
 
@@ -317,7 +341,7 @@ void add_profile(string add_profile)
 		cin.getline(new_input, 1024, '%');
 		profile=new_input;//cast char array to string
 	}
-	chdir("profiles");
+	chdir("/etc/qs/profiles");
 	ofstream create_profile(p_name.c_str());
 	create_profile << profile << endl;
 	create_profile.close();
@@ -359,7 +383,7 @@ void remove_profile(string r_profile)
 			cout << "Please pick a profile to remove" << endl;
 			DIR *dir;
 			struct dirent *ent;
-			dir = opendir ("profiles");
+			dir = opendir ("/etc/qs/profiles");
 			while ((ent = readdir (dir)) != NULL) {
 				control_unit = ent->d_name;
 				if (control_unit == "." || control_unit == "..")
@@ -376,7 +400,7 @@ void remove_profile(string r_profile)
 			}
 			cout << "Option: ";
 			cin >> chosen;
-			chdir("profiles");
+			chdir("/etc/qs/profiles");
 			remove_this_one = contents[chosen];
 			if (remove(remove_this_one.c_str()) != 0)
 			{
@@ -394,7 +418,7 @@ void remove_profile(string r_profile)
 		{
 			cout << "Please enter the name of the profile you would like to remove (case sensitive): ";
 			cin >> remove_this_one;
-			chdir("profiles");
+			chdir("/etc/qs/profiles");
 			if (remove(remove_this_one.c_str()) != 0)
 			{
 				cout << "Remove failed. Please try again" << endl;
@@ -410,7 +434,7 @@ void remove_profile(string r_profile)
 	}
 	else
 	{
-		chdir("profiles");
+		chdir("/etc/qs/profiles");
 		if (remove(r_profile.c_str()) != 0)
 		{
 			cout << "Remove failed. Please try again" << endl;
@@ -441,7 +465,7 @@ void view_profiles()
 
 	DIR *dir;
 	struct dirent *ent;
-	dir = opendir ("profiles");
+	dir = opendir ("/etc/qs/profiles");
 	while ((ent = readdir (dir)) != NULL)
 	{
 		control_unit = ent->d_name;
