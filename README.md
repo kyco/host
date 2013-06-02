@@ -21,6 +21,21 @@ Friends house profile:
     10.0.0.1 warcraft3server file.sharing.server
     10.0.0.5 friends.homewebsite
 
+###Example
+An example of a hosts file with qs in use:
+
+    # The following lines are desirable for IPv6 capable hosts
+    ::1     ip6-localhost ip6-loopback
+    fe00::0 ip6-localnet
+    ff00::0 ip6-mcastprefix
+    ff02::1 ip6-allnodes
+    ff02::2 ip6-allrouters
+
+    #quick_hosts_profile
+
+    127.0.0.1 localhost testwebsite google.co.za
+    192.168.0.3 owncloud home.server
+
 ##Requirements
 For now the project is only written with Unix like systems in mind.
 It will not work under Windows yet.
@@ -34,7 +49,7 @@ Once that is done, there will also be executables for Windows OS's.
 Nothing extra is needed for compiling
 
 No binaries are included. A compile is necessary.
-Tested with g++ in Linux Mint for both 32 bit & 64 bit installs.
+Tested with g++ in Debian for both 32 bit & 64 bit installs.
 
 Compile using:
 
@@ -52,11 +67,16 @@ Using symbolic links (preferred method)
 ##First run
 The first time you run the program you will need to give it the
 full path of your hosts file.
+Use either:
 
-Once that is done, you can proceed to create profiles
+    sudo qs -h
+
+or option 6 within the software.
+
+Once that is done, you can proceed to create profiles.
 
 ##Profiles
-Profiles are used to quickly switch between different "modes"
+Profiles are used to quickly switch between different "modes".
 The idea behind it is very simple.
 
 If you're at work and have to connect to internal IP addresses
@@ -75,7 +95,7 @@ detects your work network, it will switch the profile automatically.
 ##Arguments
 This program accepts arguments.
 
-Which are as follows
+Which are as follows.
 
 ###Switching profiles
 This will switch to a profile named "home"

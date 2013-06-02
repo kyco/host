@@ -1,3 +1,14 @@
+/*
+ *
+ * Name: qs
+ *
+ * Description: quickly change entries in your hosts file
+ *              using profiles.
+ *
+ * Author: Kyluke McDougall
+ *
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string.h>
@@ -7,6 +18,11 @@
 #include <stdio.h>
 #include <vector>
 #include <unistd.h>
+#include <sys/types.h>
+#include <ifaddrs.h>
+#include <netinet/in.h> 
+#include <arpa/inet.h>
+#include <fstream>
 
 using namespace std;
 
@@ -29,8 +45,9 @@ void remove_profile(string r_profile); // Remove one of the profiles in the list
 void add_profile(string add_profile); // Adding a new profile with constraints
 
 // Check networks
-void network_check();
+string network_check();
 
+// Start of program
 int main(int argc, char const *argv[])
 {
     string the_switch; // Holds the actual switch which determines which function is used
@@ -96,7 +113,8 @@ void menu() // Function to display the menu
     cout << "3. View profiles" << endl;
     cout << "4. Add a new profile" << endl;
     cout << "5. Remove a profile" << endl;
-    cout << "6. Setup" << endl;
+    cout << "6. Check current network" << endl;
+    cout << "9. Setup" << endl;
     cout << "0. Exit" << endl;
     cout << "Option: ";
     cin >> option; // Gets the input of the user
@@ -127,6 +145,10 @@ void menu_option(int option) // Once a choice has een made, this function will c
             wait_for_menu();
             break;
         case 6:
+            network_check(); // Remove a profile
+            wait_for_menu();
+            break;
+        case 9:
             setup("1"); // Setup the software config files
             wait_for_menu();
             break;
@@ -170,7 +192,7 @@ int setup(string switch_host_file) // Sets up the config files for the software
     string file; // Stores each line of the hosts file
     string store_path; // Stores the path of the hosts file
     string get_line; // Temporary storage for each line of the hosts file
-    string header = "#quick_hosts_profile"; // A header which defines the beginning of the host_switch configs in the hosts fole
+    string header = "#quick_hosts_profile"; // A header which defines the beginning of the host_switch configs in the hosts file
     bool check = false; // False until the header is found in the hosts file
 
     mkdir("/etc/qs",0777);
@@ -486,4 +508,43 @@ void view_profiles()
         cout << i << ". " << contents[i] << endl;
     }
     chdir("..");
+}
+
+/* Detects the network address
+ *
+ * For future use
+ */
+string network_check()
+{
+    string network;
+    string network_device;
+    struct ifaddrs * ifAddrStruct=NULL;
+    struct ifaddrs * ifa=NULL;
+    void * tmpAddrPtr=NULL;
+
+    getifaddrs(&ifAddrStruct);
+
+    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+        if (ifa ->ifa_addr->sa_family==AF_INET) { // check it is IP4
+            // is a valid IP4 Address
+            tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+            char addressBuffer[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+            // printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
+            network_device = ifa->ifa_name;
+            if (network_device != "lo")
+            {
+                network = addressBuffer;
+            }
+        } else if (ifa->ifa_addr->sa_family==AF_INET6) { // check it is IP6
+            // is a valid IP6 Address
+            tmpAddrPtr=&((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
+            char addressBuffer[INET6_ADDRSTRLEN];
+            inet_ntop(AF_INET6, tmpAddrPtr, addressBuffer, INET6_ADDRSTRLEN);
+            // printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer); 
+        } 
+    }
+    if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
+
+    return network;
 }

@@ -2,3 +2,5 @@ a.out
 qs
 *.swp
 *.html
+get_ip_address.cpp
+quick_hosts
