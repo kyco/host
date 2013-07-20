@@ -1,4 +1,18 @@
 /*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  *
  * Name: qs
  *
@@ -23,6 +37,8 @@
 #include <netinet/in.h> 
 #include <arpa/inet.h>
 #include <fstream>
+#include <unistd.h>
+#include <term.h>
 
 using namespace std;
 
@@ -46,6 +62,9 @@ void add_profile(string add_profile); // Adding a new profile with constraints
 
 // Check networks
 string network_check();
+
+// Misc
+void ClearScreen();
 
 // Start of program
 int main(int argc, char const *argv[])
@@ -164,6 +183,7 @@ void wait_for_menu() // Waits for a user to press enter before displaying the me
     std::cin.ignore(1024, '\n');
     std::cout << "press enter to continue ";
     std::cin.get();
+    ClearScreen();
     menu(); // Calls the menu function
 }
 
@@ -547,4 +567,9 @@ string network_check()
     if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
 
     return network;
+}
+
+void ClearScreen()
+{
+	cout << "\033[2J\033[1;1H";
 }
