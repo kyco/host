@@ -33,12 +33,7 @@
 #include <vector>
 #include <unistd.h>
 #include <sys/types.h>
-#include <ifaddrs.h>
-#include <netinet/in.h> 
-#include <arpa/inet.h>
 #include <fstream>
-#include <unistd.h>
-#include <term.h>
 
 using namespace std;
 
@@ -60,9 +55,6 @@ void view_profiles(); // View the profiles
 void remove_profile(string r_profile); // Remove one of the profiles in the list
 void add_profile(string add_profile); // Adding a new profile with constraints
 
-// Check networks
-string network_check();
-
 // Misc
 void ClearScreen();
 
@@ -72,15 +64,7 @@ int main(int argc, char const *argv[])
     string the_switch; // Holds the actual switch which determines which function is used
     string argument; // Holds the variable passed to the program
     int quick_incr = 0; // Used to increment within the for loop. Required to store argument as it is switch + 1
-
-    // Get the user ID
-    if (getuid() != 0)
-    {
-        cout << "This program needs to be run as root." << endl;
-        cout << "Please run this program as root." << endl;
-        exit(0);
-    }
-
+    
     if (argc % 2 != 0) // If the argument is an odd number, it is either incomplete or non-existant
     {
         for(int i = 1; i < argc; i = i + 2) // This gets all the switches and arguments (Only 1 of each instance at the moment)
@@ -125,17 +109,16 @@ void menu() // Function to display the menu
 {
     int option; // Stores the input of the user
 
-    cout << "===========================================================" << endl;
-    cout << "Options: " << endl;
+    cout << "Main Menu" << endl;
+    cout << "-----------------------------------------------------------" << endl << endl;
     cout << "1. Switch profile" << endl;
     cout << "2. Read hosts file" << endl;
     cout << "3. View profiles" << endl;
     cout << "4. Add a new profile" << endl;
     cout << "5. Remove a profile" << endl;
-    cout << "6. Check current network" << endl;
     cout << "9. Setup" << endl;
     cout << "0. Exit" << endl;
-    cout << "Option: ";
+    cout << endl << "Option: ";
     cin >> option; // Gets the input of the user
     menu_option(option); // Calls the function which will direct to the user defined function
 }
@@ -144,35 +127,37 @@ void menu_option(int option) // Once a choice has een made, this function will c
 {
     switch(option) {
         case 1:
-            choose_profile(); // Change active profile
-            wait_for_menu(); // Waits for user input before displaying the menu again
-            break;
+             system("cls");
+             choose_profile(); // Change active profile
+             wait_for_menu(); // Waits for user input before displaying the menu again
+             break;
         case 2:
-            cout << view_hosts(); // Display contents of hosts file
-            wait_for_menu();
-            break;
+             system("cls");
+             cout << view_hosts(); // Display contents of hosts file
+             wait_for_menu();
+             break;
         case 3:
-            view_profiles(); // View the available profiles
-            wait_for_menu();
-            break;
+             system("cls");
+             view_profiles(); // View the available profiles
+             wait_for_menu();
+             break;
         case 4:
-            add_profile("1"); // Add new profile
-            wait_for_menu();
-            break;
+             system("cls");
+             add_profile("1"); // Add new profile
+             wait_for_menu();
+             break;
         case 5:
-            remove_profile("1"); // Remove a profile
-            wait_for_menu();
-            break;
-        case 6:
-            network_check(); // Remove a profile
-            wait_for_menu();
-            break;
+             system("cls");
+             remove_profile("1"); // Remove a profile
+             wait_for_menu();
+             break;
         case 9:
-            setup("1"); // Setup the software config files
-            wait_for_menu();
-            break;
+             system("cls");
+             setup("1"); // Setup the software config files
+             wait_for_menu();
+             break;
         case 0:
-            exit(0);
+             exit(0);
     }
 }
 
@@ -183,7 +168,7 @@ void wait_for_menu() // Waits for a user to press enter before displaying the me
     std::cin.ignore(1024, '\n');
     std::cout << "press enter to continue ";
     std::cin.get();
-    ClearScreen();
+    system("cls");
     menu(); // Calls the menu function
 }
 
@@ -215,13 +200,13 @@ int setup(string switch_host_file) // Sets up the config files for the software
     string header = "#quick_hosts_profile"; // A header which defines the beginning of the host_switch configs in the hosts file
     bool check = false; // False until the header is found in the hosts file
 
-    mkdir("/etc/qs",0777);
-    chdir("/etc/qs");
+    _mkdir("C:\\Program Files\\kyco");
+    _mkdir("C:\\Program Files\\kyco\\qs");
+    _chdir("C:\\Program Files\\kyco\\qs");
 
     if (switch_host_file == "1") // If the hosts file needs to be setup, run this.
     {
-        cout << "Please enter the path to your hosts file: " << endl; // Requests path to hosts file
-        cin >> store_path; // Stores the path of the hosts file
+        store_path = "C:\\Windows\\System32\\drivers\\etc\\hosts";
     }
     else // Otherwise it has been setup already and will get the path from the variable passed to the function
         store_path = switch_host_file; // Stores the variable in store_path
@@ -239,27 +224,27 @@ int setup(string switch_host_file) // Sets up the config files for the software
     {
         ofstream ahf; // Opens the variable ahf to append the file
         ahf.open(store_path.c_str(),ios::app); // Open the actual file indicated by the path in store_path
-        ahf << "" << endl; // Creates a new line at the end of the file
+        ahf << "" << endl << endl; // Creates a new line at the end of the file
         ahf << header << endl; // Adds the header at the end of the file
         ahf.close(); // Closes the variable
     }
 
     given_host_file.close(); // Closes the variable for the hosts file
 
-    ofstream store_hosts("/etc/qs/host_path.ky"); // Opens the file host_path.ky for editing
+    ofstream store_hosts("C:\\Program Files\\kyco\\qs\\host_path.ky"); // Opens the file host_path.ky for editing
     store_hosts << store_path << endl; // Adds the path to the config file
     store_hosts.close(); // closes store_hosts
 
     cout << "You have selected this to be your hosts file: " << endl;
     ifstream host_file; // Initializes the variable for display
-    host_file.open ("/etc/qs/host_path.ky"); // Opens the config file
+    host_file.open ("C:\\Program Files\\kyco\\qs\\host_path.ky"); // Opens the config file
     while(!host_file.eof()) // Loops until the end of the file
     {
         getline(host_file,file); // Saves the each line in file.
         cout << file << endl; // Prints out file.
     }
     host_file.close(); // Closes the config file
-    mkdir("/etc/qs/profiles",0777); // Creates a folder with permissions for everyone to read and write to later save profiles in
+    _mkdir("C:\\Program Files\\kyco\\qs\\profiles"); // Creates a folder with permissions for everyone to read and write to later save profiles in
 
     return 0;
 }
@@ -274,7 +259,7 @@ void switch_profile(string profile)
     string header = "#quick_hosts_profile"; // Header
 
     // Load the profile directory
-    chdir("/etc/qs/profiles"); // Changes dir
+    _chdir("C:\\Program Files\\kyco\\qs\\profiles"); // Changes dir
     string working_dir = getcwd(NULL,0); // Get current working dir
 
     //Get the contents of the new profile
@@ -286,7 +271,7 @@ void switch_profile(string profile)
         profile_replace = profile_replace+new_line+line; // Adds a new line after each line was saved
     }
     new_profile.close(); // Close the variable
-    chdir(".."); // Move to parent folder
+    _chdir(".."); // Move to parent folder
     working_dir = getcwd(NULL,0); // Get current working dir
     profile_replace = header+new_line+profile_replace; // Replace the profile
 
@@ -305,7 +290,7 @@ string check_host_path() // Get the path to the hosts file
     string path; // Variable to store the actual path
 
     ifstream host_path; // Initialize the variable for opening files
-    host_path.open ("/etc/qs/host_path.ky"); // Open the config file
+    host_path.open ("C:\\Program Files\\kyco\\qs\\host_path.ky"); // Open the config file
     if (!host_path.fail()) // If it does not fail opening the config file
     {
         while(!host_path.eof()) // Loop until end of file
@@ -319,7 +304,7 @@ string check_host_path() // Get the path to the hosts file
     }
     else // Otherwise print error
     {
-        cout << "Can't open config file file" << endl;
+        cout << "Can't open config file" << endl;
         menu();
     }
     return path;
@@ -332,10 +317,13 @@ void choose_profile() // Choose the profile
     string control_unit;
     int host = 0;
     string get;
-
+    
+    cout << "Profile Switching" << endl;
+    cout << "-----------------------------------------------------------" << endl << endl;
+    
     DIR *dir;
     struct dirent *ent;
-    dir = opendir ("/etc/qs/profiles");
+    dir = opendir ("C:\\Program Files\\kyco\\qs\\profiles");
     if (dir != NULL)
     {
 
@@ -355,7 +343,7 @@ void choose_profile() // Choose the profile
         {
             cout << i << ". " << contents[i] << endl;
         }
-        cout << "Option: ";
+        cout << endl << "Option: ";
         cin >> host;
         closedir (dir);
         switch_profile(contents[host].c_str());
@@ -372,6 +360,9 @@ void add_profile(string add_profile)
     string p_name;
     string view_line;
 
+    cout << "Add profile" << endl;
+    cout << "-----------------------------------------------------------" << endl << endl;
+
     cout << "Please enter a name for your new profile: " << endl;
     cin >> p_name;
     if (add_profile != "1")
@@ -383,7 +374,7 @@ void add_profile(string add_profile)
         cin.getline(new_input, 1024, '%');
         profile=new_input;//cast char array to string
     }
-    chdir("/etc/qs/profiles");
+    _chdir("C:\\Program Files\\kyco\\qs\\profiles");
     ofstream create_profile(p_name.c_str());
     create_profile << profile << endl;
     create_profile.close();
@@ -400,7 +391,7 @@ void add_profile(string add_profile)
         cout << view_line+"\n";
     }
     view.close();
-    chdir("..");
+    _chdir("..");
 }
 
 void remove_profile(string r_profile)
@@ -413,11 +404,14 @@ void remove_profile(string r_profile)
     int chosen;
     string control_unit;
 
+    cout << "Profile removal" << endl;
+    cout << "-----------------------------------------------------------" << endl << endl;
+
     if (r_profile == "1")
     {
         cout << "1. Remove profile" << endl;
         cout << "2. View all profiles" << endl;
-        cout << "Option: ";
+        cout << endl << "Option: ";
         cin >> option;
         cout << "\n";
         if (option == 2)
@@ -425,7 +419,7 @@ void remove_profile(string r_profile)
             cout << "Please pick a profile to remove" << endl;
             DIR *dir;
             struct dirent *ent;
-            dir = opendir ("/etc/qs/profiles");
+            dir = opendir ("C:\\Program Files\\kyco\\qs\\profiles");
             while ((ent = readdir (dir)) != NULL) {
                 control_unit = ent->d_name;
                 if (control_unit == "." || control_unit == "..")
@@ -440,53 +434,53 @@ void remove_profile(string r_profile)
             {
                 cout << i << ". " << contents[i] << endl;
             }
-            cout << "Option: ";
+            cout << endl << "Option: ";
             cin >> chosen;
-            chdir("/etc/qs/profiles");
+            _chdir("C:\\Program Files\\kyco\\qs\\profiles");
             remove_this_one = contents[chosen];
             if (remove(remove_this_one.c_str()) != 0)
             {
                 cout << "Remove failed. Please try again" << endl;
-                chdir("..");
+                _chdir("..");
                 remove_profile("1");
             }
             else
             {
                 cout << "Remove successful" << endl;
-                chdir("..");
+                _chdir("..");
             }
         }
         else if (option == 1)
         {
             cout << "Please enter the name of the profile you would like to remove (case sensitive): ";
             cin >> remove_this_one;
-            chdir("/etc/qs/profiles");
+            _chdir("C:\\Program Files\\kyco\\qs\\profiles");
             if (remove(remove_this_one.c_str()) != 0)
             {
                 cout << "Remove failed. Please try again" << endl;
-                chdir("..");
+                _chdir("..");
                 remove_profile("1");
             }
             else
             {
                 cout << "Remove successful" << endl;
-                chdir("..");
+                _chdir("..");
             }
         }
     }
     else
     {
-        chdir("/etc/qs/profiles");
+        _chdir("C:\\Program Files\\kyco\\qs\\profiles");
         if (remove(r_profile.c_str()) != 0)
         {
             cout << "Remove failed. Please try again" << endl;
-            chdir("..");
+            _chdir("..");
             remove_profile("1");
         }
         else
         {
             cout << "Remove successful" << endl;
-            chdir("..");
+            _chdir("..");
         }
     }
     //remove(profile_remove.c_str());
@@ -505,9 +499,12 @@ void view_profiles()
     int control = 0;
     string control_unit;
 
+    cout << "Available profiles" << endl;
+    cout << "-----------------------------------------------------------" << endl << endl;
+
     DIR *dir;
     struct dirent *ent;
-    dir = opendir ("/etc/qs/profiles");
+    dir = opendir ("C:\\Program Files\\kyco\\qs\\profiles");
     while ((ent = readdir (dir)) != NULL)
     {
         control_unit = ent->d_name;
@@ -527,49 +524,5 @@ void view_profiles()
     {
         cout << i << ". " << contents[i] << endl;
     }
-    chdir("..");
-}
-
-/* Detects the network address
- *
- * For future use
- */
-string network_check()
-{
-    string network;
-    string network_device;
-    struct ifaddrs * ifAddrStruct=NULL;
-    struct ifaddrs * ifa=NULL;
-    void * tmpAddrPtr=NULL;
-
-    getifaddrs(&ifAddrStruct);
-
-    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
-        if (ifa ->ifa_addr->sa_family==AF_INET) { // check it is IP4
-            // is a valid IP4 Address
-            tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
-            char addressBuffer[INET_ADDRSTRLEN];
-            inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-            // printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
-            network_device = ifa->ifa_name;
-            if (network_device != "lo")
-            {
-                network = addressBuffer;
-            }
-        } else if (ifa->ifa_addr->sa_family==AF_INET6) { // check it is IP6
-            // is a valid IP6 Address
-            tmpAddrPtr=&((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
-            char addressBuffer[INET6_ADDRSTRLEN];
-            inet_ntop(AF_INET6, tmpAddrPtr, addressBuffer, INET6_ADDRSTRLEN);
-            // printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer); 
-        } 
-    }
-    if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
-
-    return network;
-}
-
-void ClearScreen()
-{
-	cout << "\033[2J\033[1;1H";
+    _chdir("..");
 }
