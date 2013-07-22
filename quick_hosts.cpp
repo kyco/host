@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <fstream>
+#include <windows.h>
 
 using namespace std;
 
@@ -56,7 +57,8 @@ void remove_profile(string r_profile); // Remove one of the profiles in the list
 void add_profile(string add_profile); // Adding a new profile with constraints
 
 // Misc
-void ClearScreen();
+int first_run();
+void no_profiles();
 
 // Start of program
 int main(int argc, char const *argv[])
@@ -64,6 +66,12 @@ int main(int argc, char const *argv[])
     string the_switch; // Holds the actual switch which determines which function is used
     string argument; // Holds the variable passed to the program
     int quick_incr = 0; // Used to increment within the for loop. Required to store argument as it is switch + 1
+    
+    // Check if the program is being run for the first time
+    if (first_run() == 0)
+    {
+        setup("1");
+    }
     
     if (argc % 2 != 0) // If the argument is an odd number, it is either incomplete or non-existant
     {
@@ -158,6 +166,9 @@ void menu_option(int option) // Once a choice has een made, this function will c
              break;
         case 0:
              exit(0);
+        default:
+             system("cls");
+             menu();
     }
 }
 
@@ -339,6 +350,10 @@ void choose_profile() // Choose the profile
                 control++;
             }
         }
+        if (control == 0)
+        {
+            no_profiles();
+        }
         for (int i = 0; i < control; ++i)
         {
             cout << i << ". " << contents[i] << endl;
@@ -350,7 +365,7 @@ void choose_profile() // Choose the profile
     }
     else
     {
-        setup("");
+        setup("1");
     }
 }
 
@@ -414,9 +429,10 @@ void remove_profile(string r_profile)
         cout << endl << "Option: ";
         cin >> option;
         cout << "\n";
+        system("cls");
         if (option == 2)
         {
-            cout << "Please pick a profile to remove" << endl;
+            cout << "Please pick a profile to remove" << endl << endl;
             DIR *dir;
             struct dirent *ent;
             dir = opendir ("C:\\Program Files\\kyco\\qs\\profiles");
@@ -430,6 +446,10 @@ void remove_profile(string r_profile)
                     control++;
                 }
             }
+            if (control == 0)
+            {
+                no_profiles();
+            }
             for (int i = 0; i < control; ++i)
             {
                 cout << i << ". " << contents[i] << endl;
@@ -440,12 +460,18 @@ void remove_profile(string r_profile)
             remove_this_one = contents[chosen];
             if (remove(remove_this_one.c_str()) != 0)
             {
+                system("cls");
                 cout << "Remove failed. Please try again" << endl;
                 _chdir("..");
+                std::cin.ignore(1024, '\n');
+                std::cout << "press enter to continue ";
+                std::cin.get();
+                system("cls");
                 remove_profile("1");
             }
             else
             {
+                system("cls");
                 cout << "Remove successful" << endl;
                 _chdir("..");
             }
@@ -489,6 +515,7 @@ void remove_profile(string r_profile)
     std::cin.ignore(1024, '\n');
     std::cout << "press enter to continue ";
     std::cin.get();
+    system("cls");
     menu();
 }
 
@@ -518,11 +545,52 @@ void view_profiles()
     }
     if (control == 0)
     {
-        cout << "You currently have no profiles" << endl;
+        no_profiles();
     }
     for (int i = 0; i < control; ++i)
     {
         cout << i << ". " << contents[i] << endl;
     }
     _chdir("..");
+    cout << endl;
+}
+
+int first_run()
+{
+    if (GetFileAttributes("C:\\Program Files\\kyco") == INVALID_FILE_ATTRIBUTES) {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+void no_profiles()
+{
+    int add_new_profile = 0;
+    
+    cout << "You currently have no profiles, would you like to add one?" << endl;
+    cout << "0. Yes" << endl;
+    cout << "1. No" << endl;
+    do
+    {
+         add_new_profile = 0;
+         cout << endl << "Option: ";
+         cin >> add_new_profile;
+    }
+    while (add_new_profile > 1);
+    
+    if (add_new_profile == 0)
+    {
+        system("cls");
+        add_profile("1");
+        wait_for_menu();
+        menu();
+    }
+    else if (add_new_profile == 1)
+    {
+         system("cls");
+         menu();
+    }
 }

@@ -46,34 +46,15 @@ for it to be compiled for Windows.
 Once that is done, there will also be executables for Windows OS's.
 
 ##Compile
-Nothing extra is needed for compiling
+You will need a C++ compiler to compile this software.
 
-No binaries are included. A compile is necessary.
-Tested with g++ in Debian for both 32 bit & 64 bit installs.
+The easiest way, for new users, is to install Bloodshed DevC++ and use it to compile.
 
-Compile using:
-
-	g++ -Wall quick_host.cpp -o qs
-
-Then make sure you have qs in your /usr/bin folder.
-To copy it:
-
-    sudo cp qs /usr/bin
-Using symbolic links (preferred method)
-
-    cd /usr/bin
-    sudo ln -s /path/to/quick_hosts/qs
+	http://www.bloodshed.net/devcpp.html
 
 ##First run
-The first time you run the program you will need to give it the
-full path of your hosts file.
-Use either:
-
-    sudo qs -h
-
-or option 6 within the software.
-
-Once that is done, you can proceed to create profiles.
+The first time you run the program, it will require you to setup the software.
+This setup is usually done automaticall unless there was a problem.
 
 ##Profiles
 Profiles are used to quickly switch between different "modes".
@@ -100,19 +81,19 @@ Which are as follows.
 ###Switching profiles
 This will switch to a profile named "home"
 
-	sudo qs -p home
+	qs -p home
 
 ###Adding profiles
 Create a new profile with the contents of 127.0.0.1 test
 
-	sudo qs -c 127.0.0.1 test
+	qs -c 127.0.0.1 test
 
 ###Removing profiles
 This will remove a profile called test
 
-	sudo qs -r test
+	qs -r test
 
 ###Setup
 This will initiate the setup process
 
-	sudo qs -h
+	qs -h
