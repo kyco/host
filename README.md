@@ -37,13 +37,10 @@ An example of a hosts file with qs in use:
     192.168.0.3 owncloud home.server
 
 ##Requirements
-For now the project is only written with Unix like systems in mind.
-It will not work under Windows yet.
+- Linux 2.6 or later
+- G++
 
-Once the project has reached its first RC, I will rewrite what is needed
-for it to be compiled for Windows.
-
-Once that is done, there will also be executables for Windows OS's.
+For the Windows version, please see the Windows branch
 
 ##Compile
 Nothing extra is needed for compiling
