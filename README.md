@@ -91,3 +91,8 @@ This will remove a profile called test
 This will initiate the setup process
 
 	qs -h
+
+Support
+-------
+
+For bugs or improvements please email [info@kycosoftware.com](mailto:info@kycosoftware.com).
