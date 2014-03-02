@@ -24,7 +24,6 @@
  */
 
 #include <iostream>
-#include <fstream>
 #include <string.h>
 #include <sys/stat.h>
 #include <dirent.h>
