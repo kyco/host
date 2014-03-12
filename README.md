@@ -95,4 +95,5 @@ This will initiate the setup process
 Support
 -------
 
-For bugs or improvements please email [info@kycosoftware.com](mailto:info@kycosoftware.com).
+For bugs or improvements please use the [issues tab](https://github.com/kyco/host/issues)
+or email [support@kycosoftware.com](mailto:support@kycosoftware.com).
