@@ -112,3 +112,9 @@ This will remove a profile called test
 This will initiate the setup process
 
 	sudo qs -h
+
+Support
+-------
+
+For bugs or improvements please use the [issues tab](https://github.com/kyco/host/issues)
+or email [support@kycosoftware.com](mailto:support@kycosoftware.com).
