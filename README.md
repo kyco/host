@@ -1,6 +1,5 @@
 #QS
 
-##Description
 QS is designed for people who edit their hosts file a lot.
 The idea behind it is simple, profiles.
 
