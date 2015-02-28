@@ -1,6 +1,5 @@
 #QS
 
-##Description
 QS is designed for people who edit their hosts file a lot.
 The idea behind it is simple, profiles.
 
@@ -37,18 +36,40 @@ An example of a hosts file with qs in use:
     192.168.0.3 owncloud home.server
 
 ##Requirements
-A PC running Windows XP or later. Linux version is available in the master branch.
+- Linux 2.6 or later
+- G++
+
+For the Windows version, please see the Windows branch
 
 ##Compile
-You will need a C++ compiler to compile this software.
+Nothing extra is needed for compiling
 
-The easiest way, for new users, is to install Bloodshed DevC++ and use it to compile.
+No binaries are included. A compile is necessary.
+Tested with g++ in Debian for both 32 bit & 64 bit installs.
 
-	http://www.bloodshed.net/devcpp.html
+Compile using:
+
+    g++ -Wall quick_host.cpp -o qs
+
+Then make sure you have qs in your /usr/bin folder.
+To copy it:
+
+    sudo cp qs /usr/bin
+Using symbolic links (preferred method)
+
+    cd /usr/bin
+    sudo ln -s /path/to/quick_hosts/qs
 
 ##First run
-The first time you run the program, it will require you to setup the software.
-This setup is usually done automaticall unless there was a problem.
+The first time you run the program you will need to give it the
+full path of your hosts file.
+Use either:
+
+    sudo qs -h
+
+or option 6 within the software.
+
+Once that is done, you can proceed to create profiles.
 
 ##Profiles
 Profiles are used to quickly switch between different "modes".
@@ -75,22 +96,22 @@ Which are as follows.
 ###Switching profiles
 This will switch to a profile named "home"
 
-	qs -p home
+    sudo qs -p home
 
 ###Adding profiles
 Create a new profile with the contents of 127.0.0.1 test
 
-	qs -c 127.0.0.1 test
+    sudo qs -c 127.0.0.1 test
 
 ###Removing profiles
 This will remove a profile called test
 
-	qs -r test
+    sudo qs -r test
 
 ###Setup
 This will initiate the setup process
 
-	qs -h
+    sudo qs -h
 
 Support
 -------
